@@ -348,6 +348,12 @@ if __name__ == '__main__':
 
         # Check if it is time to exit
         if (not timerCancelled) and (secondsUntilSleep == 0):
+            # Clear all the values first - a bug was reported that hinted that if a script
+            # was done on a video end, settings were not getting cleared, so these values
+            # are now cleared first
+            secondsUntilSleep = -1
+            timerCancelled = True
+            timerAfterVideo = False
             # Check if anything is playing, if so we want to stop it
             if xbmc.Player().isPlaying():
                 xbmc.Player().stop()
@@ -379,10 +385,6 @@ if __name__ == '__main__':
                     xbmcgui.Dialog().notification(ADDON.getLocalizedString(32001).encode('utf-8'), ADDON.getLocalizedString(32037).encode('utf-8'), ADDON.getAddonInfo('icon'), 5000, False)
                 else:
                     xbmc.executebuiltin("RunScript(%s)" % shutdownScript, False)
-
-            secondsUntilSleep = -1
-            timerCancelled = True
-            timerAfterVideo = False
         elif videoNeedsResume:
             log("Sleep: Resuming video as we paused it for sleep dialog")
             videoNeedsResume = False

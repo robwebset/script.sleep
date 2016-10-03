@@ -1,3 +1,6 @@
+v1.2.4 (2016-10-03)
+- Fix issue with repeated shutdown script execution
+
 v1.2.2 (2016-08-26)
 - Allow notifications to be configured better
 
