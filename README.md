@@ -20,14 +20,12 @@ You can launch the Sleep Configuration window in the following ways:
 
 Please take a look at the wiki for more information:
 
-[Add-on:Sleep](http://kodi.wiki/view/Add-on:Sleep)
+[Add-on:Sleep](https://github.com/robwebset/script.sleep/wiki)
 
-You can install this addon from: [Repository:robwebset](https://github.com/robwebset/repository.robwebset/blob/master/repos/repository.robwebset/repository.robwebset-1.0.0.zip) ([wiki](http://kodi.wiki/view/Repository:robwebset))
+You can install this addon from: [Repository:robwebset](https://github.com/robwebset/repository.robwebset/blob/master/repos/repository.robwebset/repository.robwebset-1.0.0.zip) ([wiki](https://github.com/robwebset/repository.robwebset/wiki))
 
 __Donations__
 
 If you have found the Sleep Addon useful and would like to help support future development and bug fixes, then please feel free to make a small donation.
 
 [![Donation](https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A988B6L2EAR2A)
-
-License: See [LICENSE.txt](LICENSE.txt)
