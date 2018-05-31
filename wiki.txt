@@ -1,0 +1,89 @@
+[[https://github.com/robwebset/script.sleep/raw/master/icon.png]]
+
+== Introduction ==
+You can install this addon from: [https://www.urepo.org URepo Repository]
+<br /><br />
+The Sleep addon provides support to automatically shutdown/suspend Kodi in a similar manner to the traditional TV Sleep Timers. If has many additional features and can be launch by any of the following methods:
+* From the "Programs" area of Kodi
+* As a screensaver
+* Via a remote control or keyboard button (Configurable which button)
+<br />
+== The Sleep Dialog ==
+[[https://github.com/robwebset/repository.robwebset/raw/master/script.sleep/images/Sleep-Dialog.JPG]]
+<br />
+The dialog to control the Sleep Addon is designed to be as simple as possible. When the dialog first opens it will show the sleep timer as disabled, the timer can be extended, by default in ten minute intervals (configurable in the settings), by performing either of the following actions:
+* Pressing the configured remote or keyboard button again (For each press it will extend the timer)
+* Selecting the "+10" button on the dialog
+If the sleep timer is currently set if can be reduced or cancelled by selecting either the "-10" button or the cancel button.
+<br />
+The sleep timer will also allow you to have Kodi shutdown after a video finishes playing. If there is a video playing when the sleep timer is set, it will shutdown after it completes. If there is not currently a video playing it will shutdown after the next played video completes. (Note: The Sleep timer will only shutdown the system if the video completes playing, if the video is stopped manually, then sleep timer will not shutdown - this is by design).
+<br />
+== Shutdown Warnings ==
+When the Sleep timer is about to expire and shutdown the system it will again display the shutdown dialog with a progress bar showing how long it is until the shutdown will commence. While this dialog is displayed the timer can be:
+* Extended (In the same manner as it was originally set)
+* Cancelled (By selecting the cancel button)
+* Left to expire and shutdown Kodi.
+In addition to the shutdown dialog, it is possible to configure the Sleep Addon to display a notification of how long is left before shutdown will be performed (for example 30, 20, 10 minutes left).
+<br />
+== Remote Control or Keyboard Setup ==
+It is possible to configure the Sleep Addon to response to a keyboard or remote control button press. This can be done by either selecting one of the predefined options in the Addon settings or have the Sleep Addon auto detect a key/button press and then use that to allow you to control the Sleep Addon. This can be configured from the Sleep Addon Settings.
+<br />
+== Sleep After Idle Period ==
+If you with to have the Sleep Addon detect when the system has been idle for a set period of time, and then start the notification for shutdown, this can be done by selecting Sleep as your chosen screensaver, then when the screensaver triggers, it will display the Sleep shutdown dialog.
+<br />
+== Settings ==
+=== Sleep ===
+{| border="0"
+|- valign=top
+|
+:'''Sleep Interval Length (Minutes)'''
+::How much to increase or decrease the time when the +/- button is pressed of the configured sleep key
+:'''Warning Length (Seconds)'''
+::How long to display the warning dialog before shutdown
+:'''Maximum Sleep Time (Minutes)'''
+::The maximum time that the timer can be set for, after that time the timer will loop from zero again
+:'''Pause Video When Displaying Timer Dialog'''
+::If the timer dialog is displayed while a video is playing, should the video be paused?
+:'''Shutdown Earlier If Screensaver Starts'''
+::If the timer has been set, and the screensaver starts, trigger shutdown
+:'''Display Sleep Reminders'''
+::If reminders for how much time remains before shutdown are required
+:'''- Start Showing Reminders For Last (Minutes)'''
+::If reminders are set, when they should start being displayed
+:'''- Frequency To Display Reminder (Minutes)'''
+::If reminders are set, how often they should be displayed
+:'''Dim Screen'''
+::If the timer has been set, dim the screen so that it is darker - aka "Night Time Mode"
+|}
+=== Controls ===
+{| border="0"
+|- valign=top
+|
+:'''Button Selection'''
+::Choose which button to map to the Sleep command. Either None, Mute, Astrisk (*) or Custom
+:'''Automatic Button Detection'''
+::Allows a button to be automatically detected by the Sleep Addon and used to control it
+:'''Manual Detection'''
+::For advanced users only - allows the manual codes to be entered
+|}
+=== Advanced ===
+{| border="0"
+|- valign=top
+|
+:'''Shutdown Behaviour'''
+::Allows the operation that is performed when the timer expires to be change.
+::''Default Shutdown'' - Performs the shutdown set in the Kodi System Settings
+::''HTTP Request'' - Makes a call to the given URL
+::''Screensaver'' - Stats the Kodi screensaver
+::''Scripts'' - Runs the given python script
+:<u>'''''Setup'''''</u>
+::
+:'''Debugging'''
+::Enables Sleep debug logging (Required if reporting a problem) - for this to work, system-wide Kodi logging must also be enabled
+|}
+<br />
+== Debugging ==
+If reporting a problem, please also provide a debug log. To do this you need to enable BOTH:
+* Kodi logging from the main setting menu
+* Sleep Addon debug from the Sleep addon settings menu
+Please do not paste the log into the forum thread, just link to it.
