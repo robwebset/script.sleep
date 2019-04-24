@@ -1,3 +1,8 @@
+__NOTICE__
+
+__This addon is no longer maintained by me, if you are interested in taking it over then please contact me via the Issues section. (You are welcome to submit it to the official Kodi Repo - just make sure you remove my name from it before you do it)__
+
+
 ![Sleep](icon.png)
 
 The Sleep addon behaves like a standard TVs sleep timer where you can vary the length of time before Kodi will shut down. It is designed to be mapped to a button on your remote control (Configurable in the settings) so you can launch, add time and view the current setting by the use of a single button.
@@ -21,15 +26,3 @@ You can launch the Sleep Configuration window in the following ways:
 Please take a look at the wiki for more information:
 
 [Add-on:Sleep](https://github.com/robwebset/script.sleep/wiki)
-
-You can install this addon from: [Repository:URepo](http://www.urepo.org/)
-
-For latest developer version: [Repository:robwebset](https://github.com/robwebset/repository.robwebset/blob/master/repos/repository.robwebset/repository.robwebset-1.0.0.zip) ([wiki](https://github.com/robwebset/repository.robwebset/wiki))
-
-To ask questions or comment about Sleep, please use the forum at [URepo.org](http://www.urepo.org/forum/viewtopic.php?t=1757)
-
-__Donations__
-
-If you have found the Sleep Addon useful and would like to help support future development and bug fixes, then please feel free to make a small donation.
-
-[![Donation](https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A988B6L2EAR2A)

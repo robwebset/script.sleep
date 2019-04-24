@@ -1,8 +1,6 @@
 [[https://github.com/robwebset/script.sleep/raw/master/icon.png]]
 
 == Introduction ==
-You can install this addon from: [https://www.urepo.org URepo Repository]
-<br /><br />
 The Sleep addon provides support to automatically shutdown/suspend Kodi in a similar manner to the traditional TV Sleep Timers. If has many additional features and can be launch by any of the following methods:
 * From the "Programs" area of Kodi
 * As a screensaver

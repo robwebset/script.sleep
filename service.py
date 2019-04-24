@@ -251,176 +251,155 @@ if __name__ == '__main__':
     # Window used to overlay an image while the timer is running
     overlayWindow = None
 
-    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Addons.GetAddonDetails", "params": { "addonid": "repository.robwebset", "properties": ["enabled", "broken", "name", "author"]  }, "id": 1}')
-    json_response = json.loads(json_query)
+    while not monitor.abortRequested():
+        showTimerWindow = False
+        screensaverTrigger = False
 
-    displayNotice = True
-    if ("result" in json_response) and ('addon' in json_response['result']):
-        addonItem = json_response['result']['addon']
-        if (addonItem['enabled'] is True) and (addonItem['broken'] is False) and (addonItem['type'] == 'xbmc.addon.repository') and (addonItem['addonid'] == 'repository.robwebset') and (addonItem['author'] == 'robwebset'):
-            displayNotice = False
-
-    if displayNotice:
-        json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Addons.GetAddonDetails", "params": { "addonid": "repository.urepo", "properties": ["enabled", "broken", "name", "author"]  }, "id": 1}')
-        json_response = json.loads(json_query)
-
-        if ("result" in json_response) and ('addon' in json_response['result']):
-            addonItem = json_response['result']['addon']
-            if (addonItem['enabled'] is True) and (addonItem['broken'] is False) and (addonItem['type'] == 'xbmc.addon.repository') and (addonItem['addonid'] == 'repository.urepo'):
-                displayNotice = False
-
-    if displayNotice:
-        xbmc.executebuiltin('Notification("robwebset or URepo Repository Required","github.com/robwebset/repository.robwebset",10000,%s)' % ADDON.getAddonInfo('icon'))
-    else:
-        while not monitor.abortRequested():
-            showTimerWindow = False
-            screensaverTrigger = False
-
-            # Check if we need to prompt the user to enter a new set of sleep values
-            sleepPrompt = xbmcgui.Window(10000).getProperty("SleepPrompt")
-            if sleepPrompt not in ["", None]:
-                xbmcgui.Window(10000).clearProperty("SleepPrompt")
-                log("Sleep: Request to display prompt detected")
-                showTimerWindow = True
-                # Check if were were triggered as a screensaver
-                if sleepPrompt.lower() == "screensaver":
-                    secondsUntilSleep = 1
-                    screensaverTrigger = True
-
-            # Check if we need to warn the user that the system is about to shut down
-            if secondsUntilSleep == Settings.getWarningLength():
-                log("Sleep: Nearing sleep time, display dialog")
-                showTimerWindow = True
-
-            if timerAfterVideo and playerMonitor.getAndResetPlaybackEnd():
-                log("Sleep: Detected playback just stopped, shutting down")
-                showTimerWindow = True
-                secondsUntilSleep = Settings.getWarningLength()
-                timerAfterVideo = False
-
-            # Check if we should shut down if the screensaver starts
-            if (monitor.isScreensaverActive() or screensaverTrigger) and (secondsUntilSleep > 0):
-                log("Sleep: Screensaver started while timer set, or Sleep Screensaver")
-                # Need to wake up the screensaver so we can see the shutdown dialog
-
-                # A bit of a hack, but we need Kodi to think a user is "doing things" so
-                # that itstops the screensaver, so we just send the message
-                # to open the Context menu - which in our case will do nothing
-                # but it does make Kodi think the user has done something
-                xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Input.ContextMenu", "id": 1}')
-
+        # Check if we need to prompt the user to enter a new set of sleep values
+        sleepPrompt = xbmcgui.Window(10000).getProperty("SleepPrompt")
+        if sleepPrompt not in ["", None]:
+            xbmcgui.Window(10000).clearProperty("SleepPrompt")
+            log("Sleep: Request to display prompt detected")
+            showTimerWindow = True
+            # Check if were were triggered as a screensaver
+            if sleepPrompt.lower() == "screensaver":
                 secondsUntilSleep = 1
-                showTimerWindow = True
+                screensaverTrigger = True
 
-            videoNeedsResume = False
+        # Check if we need to warn the user that the system is about to shut down
+        if secondsUntilSleep == Settings.getWarningLength():
+            log("Sleep: Nearing sleep time, display dialog")
+            showTimerWindow = True
 
-            if showTimerWindow:
-                # Need to display the window using the existing values
-                viewer = TimerWindow.createTimerWindow(timerAfterVideo, secondsUntilSleep)
+        if timerAfterVideo and playerMonitor.getAndResetPlaybackEnd():
+            log("Sleep: Detected playback just stopped, shutting down")
+            showTimerWindow = True
+            secondsUntilSleep = Settings.getWarningLength()
+            timerAfterVideo = False
 
-                # Check if we need to pause the video, if we pause it then we actually leave
-                # the resume until later - as we might actually be about to exit kodi so there
-                # is no point starting the video again, just for it to be stopped
-                if Settings.pauseVideoForDialogDisplay() and xbmc.Player().isPlayingVideo():
-                    log("Sleep: Pausing video to display timer dialog")
-                    xbmc.Player().pause()
-                    videoNeedsResume = True
+        # Check if we should shut down if the screensaver starts
+        if (monitor.isScreensaverActive() or screensaverTrigger) and (secondsUntilSleep > 0):
+            log("Sleep: Screensaver started while timer set, or Sleep Screensaver")
+            # Need to wake up the screensaver so we can see the shutdown dialog
 
-                # If TvTunes was playing, then allow it to continue
-                xbmcgui.Window(12000).setProperty("TvTunesContinuePlaying", "True")
+            # A bit of a hack, but we need Kodi to think a user is "doing things" so
+            # that itstops the screensaver, so we just send the message
+            # to open the Context menu - which in our case will do nothing
+            # but it does make Kodi think the user has done something
+            xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Input.ContextMenu", "id": 1}')
 
-                viewer.show()
-                # Tidy up any duplicate presses of the remote button before we run
-                # the progress
-                xbmcgui.Window(10000).clearProperty("SleepPrompt")
-                viewer.runProgress()
+            secondsUntilSleep = 1
+            showTimerWindow = True
 
-                # Clear the TvTunes flag
-                xbmcgui.Window(12000).clearProperty("TvTunesContinuePlaying")
+        videoNeedsResume = False
 
-                # Now read the values entered for the sleep timers
-                timerCancelled, timerAfterVideo, secondsUntilSleep = viewer.getTimerValues()
-                del viewer
+        if showTimerWindow:
+            # Need to display the window using the existing values
+            viewer = TimerWindow.createTimerWindow(timerAfterVideo, secondsUntilSleep)
 
-                # Check if the timer has been set and we need to dim the screen
-                if Settings.getDimValue() not in [None, "", '00000000']:
-                    if (timerAfterVideo or (secondsUntilSleep > 0)) and (not timerCancelled):
-                        log("Sleep: Dimming screen")
-                        if overlayWindow is None:
-                            overlayWindow = SleepOverlay.createSleepOverlay()
-                        if overlayWindow.isClosed():
-                            overlayWindow.show()
-                    else:
-                        if overlayWindow is not None:
-                            if not overlayWindow.isClosed():
-                                overlayWindow.close()
-                            del overlayWindow
-                            overlayWindow = None
-
-            elif (not timerCancelled) and (secondsUntilSleep > 0) and Settings.displaySleepReminders():
-                # Check if we are far enough into the time to start showing reminders
-                secondsUntilReminderStart = Settings.getSleepRemindersStart() * 60
-                if secondsUntilSleep <= secondsUntilReminderStart:
-                    # Check if notifications are required
-                    # Need to notify on set boundaries
-                    secondsInInterval = Settings.getSleepRemindersInterval() * 60
-                    # Check if we are on a set interval
-                    if secondsUntilSleep % secondsInInterval == 0:
-                        label = "%d %s" % (int(secondsUntilSleep / 60), ADDON.getLocalizedString(32106))
-                        xbmcgui.Dialog().notification(ADDON.getLocalizedString(32001).encode('utf-8'), label.encode('utf-8'), ADDON.getAddonInfo('icon'), 3000, False)
-
-            if secondsUntilSleep > 0:
-                # Reduce the remaining timer by one second
-                secondsUntilSleep = secondsUntilSleep - 1
-
-            # Check if it is time to exit
-            if (not timerCancelled) and (secondsUntilSleep == 0):
-                # Clear all the values first - a bug was reported that hinted that if a script
-                # was done on a video end, settings were not getting cleared, so these values
-                # are now cleared first
-                secondsUntilSleep = -1
-                timerCancelled = True
-                timerAfterVideo = False
-                # Check if anything is playing, if so we want to stop it
-                if xbmc.Player().isPlaying():
-                    xbmc.Player().stop()
-                    log("Sleep: Stopped media playing before shutdown")
-                # Using ShutDown will perform the default behaviour that Kodi has in the system settings
-                if Settings.getShutdownCommand() == Settings.SHUTDOWN_DEFAULT:
-                    log("Sleep: Default shutdown started")
-                    xbmc.executebuiltin("ShutDown")
-                elif Settings.getShutdownCommand() == Settings.SHUTDOWN_SCREENSAVER:
-                    log("Sleep: Screensaver shutdown started")
-                    xbmc.executebuiltin("ActivateScreensaver")
-                elif Settings.getShutdownCommand() == Settings.SHUTDOWN_HTTP:
-                    url = Settings.getShutdownURL()
-                    if url in [None, ""]:
-                        log("Sleep: Shutdown URL not set")
-                    else:
-                        log("Sleep: Calling shutdown url %s" % url)
-                        try:
-                            # Call the url, we don't care about the response
-                            fp, h = urllib.urlretrieve(url)
-                            log(h)
-                        except:
-                            log("Sleep: Failed to call shutdown url: %s" % traceback.format_exc(), xbmc.LOGERROR)
-                elif Settings.getShutdownCommand() == Settings.SHUTDOWN_SCRIPT:
-                    log("Sleep: Script shutdown started")
-                    shutdownScript = Settings.getShutdownScript()
-                    if (shutdownScript in [None, ""]) or (not xbmcvfs.exists(shutdownScript)):
-                        log("Sleep: Shutdown Script Invalid")
-                        xbmcgui.Dialog().notification(ADDON.getLocalizedString(32001).encode('utf-8'), ADDON.getLocalizedString(32037).encode('utf-8'), ADDON.getAddonInfo('icon'), 5000, False)
-                    else:
-                        xbmc.executebuiltin("RunScript(%s)" % shutdownScript, False)
-            elif videoNeedsResume:
-                log("Sleep: Resuming video as we paused it for sleep dialog")
-                videoNeedsResume = False
+            # Check if we need to pause the video, if we pause it then we actually leave
+            # the resume until later - as we might actually be about to exit kodi so there
+            # is no point starting the video again, just for it to be stopped
+            if Settings.pauseVideoForDialogDisplay() and xbmc.Player().isPlayingVideo():
+                log("Sleep: Pausing video to display timer dialog")
                 xbmc.Player().pause()
+                videoNeedsResume = True
 
-            # Sleep/wait for abort for the correct interval
-            if monitor.waitForAbort(1):
-                # Abort was requested while waiting
-                break
+            # If TvTunes was playing, then allow it to continue
+            xbmcgui.Window(12000).setProperty("TvTunesContinuePlaying", "True")
+
+            viewer.show()
+            # Tidy up any duplicate presses of the remote button before we run
+            # the progress
+            xbmcgui.Window(10000).clearProperty("SleepPrompt")
+            viewer.runProgress()
+
+            # Clear the TvTunes flag
+            xbmcgui.Window(12000).clearProperty("TvTunesContinuePlaying")
+
+            # Now read the values entered for the sleep timers
+            timerCancelled, timerAfterVideo, secondsUntilSleep = viewer.getTimerValues()
+            del viewer
+
+            # Check if the timer has been set and we need to dim the screen
+            if Settings.getDimValue() not in [None, "", '00000000']:
+                if (timerAfterVideo or (secondsUntilSleep > 0)) and (not timerCancelled):
+                    log("Sleep: Dimming screen")
+                    if overlayWindow is None:
+                        overlayWindow = SleepOverlay.createSleepOverlay()
+                    if overlayWindow.isClosed():
+                        overlayWindow.show()
+                else:
+                    if overlayWindow is not None:
+                        if not overlayWindow.isClosed():
+                            overlayWindow.close()
+                        del overlayWindow
+                        overlayWindow = None
+
+        elif (not timerCancelled) and (secondsUntilSleep > 0) and Settings.displaySleepReminders():
+            # Check if we are far enough into the time to start showing reminders
+            secondsUntilReminderStart = Settings.getSleepRemindersStart() * 60
+            if secondsUntilSleep <= secondsUntilReminderStart:
+                # Check if notifications are required
+                # Need to notify on set boundaries
+                secondsInInterval = Settings.getSleepRemindersInterval() * 60
+                # Check if we are on a set interval
+                if secondsUntilSleep % secondsInInterval == 0:
+                    label = "%d %s" % (int(secondsUntilSleep / 60), ADDON.getLocalizedString(32106))
+                    xbmcgui.Dialog().notification(ADDON.getLocalizedString(32001).encode('utf-8'), label.encode('utf-8'), ADDON.getAddonInfo('icon'), 3000, False)
+
+        if secondsUntilSleep > 0:
+            # Reduce the remaining timer by one second
+            secondsUntilSleep = secondsUntilSleep - 1
+
+        # Check if it is time to exit
+        if (not timerCancelled) and (secondsUntilSleep == 0):
+            # Clear all the values first - a bug was reported that hinted that if a script
+            # was done on a video end, settings were not getting cleared, so these values
+            # are now cleared first
+            secondsUntilSleep = -1
+            timerCancelled = True
+            timerAfterVideo = False
+            # Check if anything is playing, if so we want to stop it
+            if xbmc.Player().isPlaying():
+                xbmc.Player().stop()
+                log("Sleep: Stopped media playing before shutdown")
+            # Using ShutDown will perform the default behaviour that Kodi has in the system settings
+            if Settings.getShutdownCommand() == Settings.SHUTDOWN_DEFAULT:
+                log("Sleep: Default shutdown started")
+                xbmc.executebuiltin("ShutDown")
+            elif Settings.getShutdownCommand() == Settings.SHUTDOWN_SCREENSAVER:
+                log("Sleep: Screensaver shutdown started")
+                xbmc.executebuiltin("ActivateScreensaver")
+            elif Settings.getShutdownCommand() == Settings.SHUTDOWN_HTTP:
+                url = Settings.getShutdownURL()
+                if url in [None, ""]:
+                    log("Sleep: Shutdown URL not set")
+                else:
+                    log("Sleep: Calling shutdown url %s" % url)
+                    try:
+                        # Call the url, we don't care about the response
+                        fp, h = urllib.urlretrieve(url)
+                        log(h)
+                    except:
+                        log("Sleep: Failed to call shutdown url: %s" % traceback.format_exc(), xbmc.LOGERROR)
+            elif Settings.getShutdownCommand() == Settings.SHUTDOWN_SCRIPT:
+                log("Sleep: Script shutdown started")
+                shutdownScript = Settings.getShutdownScript()
+                if (shutdownScript in [None, ""]) or (not xbmcvfs.exists(shutdownScript)):
+                    log("Sleep: Shutdown Script Invalid")
+                    xbmcgui.Dialog().notification(ADDON.getLocalizedString(32001).encode('utf-8'), ADDON.getLocalizedString(32037).encode('utf-8'), ADDON.getAddonInfo('icon'), 5000, False)
+                else:
+                    xbmc.executebuiltin("RunScript(%s)" % shutdownScript, False)
+        elif videoNeedsResume:
+            log("Sleep: Resuming video as we paused it for sleep dialog")
+            videoNeedsResume = False
+            xbmc.Player().pause()
+
+        # Sleep/wait for abort for the correct interval
+        if monitor.waitForAbort(1):
+            # Abort was requested while waiting
+            break
 
     del playerMonitor
     del monitor
